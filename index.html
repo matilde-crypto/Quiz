@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quiz di valutazione</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--text:#1d2330;--muted:#667085;--accent:#2f5bea;--star:#f5a623;--off:#d0d5dd}
+@media(prefers-color-scheme:dark){:root{--bg:#14171d;--card:#1e222b;--text:#eef0f4;--muted:#9aa3b2;--accent:#6f8dff;--off:#3a4150}}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--text);display:flex;justify-content:center;padding:16px}
+.card{background:var(--card);border-radius:14px;max-width:640px;width:100%;padding:20px;box-shadow:0 2px 12px rgba(0,0,0,.08)}
+h1{font-size:1.5rem;margin:.2em 0}
+p{line-height:1.5}.muted{color:var(--muted)}
+img{width:100%;max-height:60vh;object-fit:contain;border-radius:10px;background:var(--bg)}
+.frase{font-size:1.2rem;margin:14px 0}
+.stars{display:flex;gap:6px;justify-content:center;margin:14px 0}
+.stars button{font-size:2.6rem;line-height:1;background:none;border:0;cursor:pointer;color:var(--off);padding:0 2px}
+.stars button.on{color:var(--star)}
+.stars button:focus-visible,.btn:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.btn{background:var(--accent);color:#fff;border:0;border-radius:10px;padding:12px 22px;font-size:1rem;cursor:pointer;width:100%}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.bar{height:6px;background:var(--off);border-radius:3px;margin-bottom:14px}
+.bar div{height:100%;background:var(--accent);border-radius:3px;transition:width .25s}
+.hide{display:none}
+</style>
+</head>
+<body>
+<div class="card">
+
+//frase di introduzione
+<div id="intro">
+  <h1>Evaluation quiz</h1>
+  <p>Evaluate the accuracy of the description of the anomaly you see in the image.</p>
+  <button class="btn" id="start">Inizia</button>
+</div>
+
+<div id="quiz" class="hide">
+  <div class="bar"><div id="prog"></div></div>
+  <p class="muted" id="count"></p>
+  <img id="img" alt="">
+  <p class="frase" id="frase"></p>
+  <div class="stars" id="stars" role="radiogroup" aria-label="Voto da 1 a 5"></div>
+  <button class="btn" id="next" disabled>Avanti</button>
+</div>
+
+<div id="fine" class="hide">
+  <h1 id="fineTit">Grazie!</h1>
+  <p id="fineTxt" class="muted"></p>
+  <button class="btn hide" id="retry">Riprova a inviare</button>
+</div>
+
+</div>
+<script src="domande.js"></script>
+<script>
+// ====== IMPOSTAZIONI ======
+//URL di google apps script
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyQMvyza6gd3TFYZ-JE8z2WDWBZSRkFH-STucgJ7kgbQ8yOmAwBGjxLxCwVCs7COHD00g/exec"; 
+const QUANTE = 10; // quante domande vede ogni persona
+// ==========================
+
+const $ = id => document.getElementById(id);
+let scelte = [], risposte = [], i = 0, voto = 0;
+const idPersona = Math.random().toString(36).slice(2, 10);
+
+function mescola(a){ a=a.slice(); for(let k=a.length-1;k>0;k--){const j=Math.floor(Math.random()*(k+1)); [a[k],a[j]]=[a[j],a[k]];} return a; }
+
+$("n").textContent = Math.min(QUANTE, DOMANDE.length);
+const st = $("stars");
+for(let k=1;k<=5;k++){
+  const b=document.createElement("button");
+  b.textContent="★"; b.setAttribute("aria-label",k+" stelle");
+  b.onclick=()=>setVoto(k); st.appendChild(b);
+}
+function setVoto(v){ voto=v; [...st.children].forEach((b,k)=>b.classList.toggle("on",k<v)); $("next").disabled=false; }
+
+$("start").onclick=()=>{
+  scelte = mescola(DOMANDE.map((d,k)=>({...d,id:k+1}))).slice(0,QUANTE);
+  $("intro").classList.add("hide"); $("quiz").classList.remove("hide"); mostra();
+};
+function mostra(){
+  const d=scelte[i]; voto=0; setVoto(0); $("next").disabled=true;
+  $("img").src=d.img; $("img").alt=d.text; $("frase").textContent=d.text;
+  $("count").textContent=`Domanda ${i+1} di ${scelte.length}`;
+  $("prog").style.width=(i/scelte.length*100)+"%";
+  $("next").textContent = i===scelte.length-1 ? "Invia" : "Avanti";
+}
+$("next").onclick=()=>{
+  risposte.push({domanda:scelte[i].id, frase:scelte[i].text, voto});
+  if(++i<scelte.length) mostra(); else invia();
+};
+async function invia(){
+  $("quiz").classList.add("hide"); $("fine").classList.remove("hide");
+  $("fineTit").textContent="Invio in corso…"; $("fineTxt").textContent=""; $("retry").classList.add("hide");
+  try{
+    await fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},
+      body:JSON.stringify({persona:idPersona,risposte})});
+    $("fineTit").textContent="Grazie!"; $("fineTxt").textContent="Le tue risposte sono state inviate. Puoi chiudere questa pagina.";
+  }catch(e){
+    $("fineTit").textContent="Invio non riuscito"; $("fineTxt").textContent="Controlla la connessione e riprova.";
+    $("retry").classList.remove("hide"); $("retry").onclick=invia;
+  }
+}
+</script>
+</body>
+</html>
