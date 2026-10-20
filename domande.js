@@ -20,11 +20,11 @@ const DOMANDE = [
   { img: "immagini/print_0002.png", text: "The subject is a hazelnut, showing a cluster of small, light-colored mold spots on the central portion of its brown shell surface." },
   { img: "immagini/print_0007.png", text: "The hazelnut displays irregular, bright white patches of mold on the lower and right-central areas of its shell." },
   { img: "immagini/print_0008.png", text: "The subject is a hazelnut, which exhibits a glowing, cyan-colored text spelling KOKI on its upper surface as the highlighted anomaly." },
-  { img: "immagini/print_00013.png", text: "The hazelnut features a small, white, textured patch of mold or growth on the right side of its brown shell." },
+  { img: "immagini/print_0013.png", text: "The hazelnut features a small, white, textured patch of mold or growth on the right side of its brown shell." },
   
   //screw
   { img: "immagini/manipulated_front_0000.png", text: "The screw features a deformed and bent tip at its bottom end, presenting an irregular, hooked appearance instead of a straight, pointed shape." },
-  { img: "immagini/maimmanipulated_front_0010.png", text: "The screw has a deformed and chipped tip at its bottom end, appearing jagged and physically damaged." },
+  { img: "immagini/manipulated_front_0010.png", text: "The screw has a deformed and chipped tip at its bottom end, appearing jagged and physically damaged." },
   { img: "immagini/manipulated_front_0015.png", text: "The subject is a metal screw, and the anomaly is a deformed, bent tip located at the pointed end on the left side of the screw." },
   { img: "immagini/manipulated_front_0017.png", text: "The screw features a chipped and deformed tip at the end of its threaded shaft." },
   { img: "immagini/scratch_head_0004.png", text: "The subject is a metal screw, and the signaled anomaly is a structural defect or damage located on the flat head of the screw, specifically within the central drive slot." },
