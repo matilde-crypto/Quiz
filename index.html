@@ -84,7 +84,7 @@ function mostra(){
   $("next").textContent = i===scelte.length-1 ? "Submit" : "Next";
 }
 $("next").onclick=()=>{
-  risposte.push({domanda:scelte[i].id, frase:scelte[i].text, voto});
+  risposte.push({domanda:scelte[i].id, frase:scelte[i].text, immagine:scelte[i].img.split("/").pop(), voto});
   if(++i<scelte.length) mostra(); else invia();
 };
 async function invia(){
