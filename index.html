@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="it">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Quiz di valutazione</title>
+<title>Evaluation quiz</title>
 <style>
 :root{--bg:#f6f7f9;--card:#fff;--text:#1d2330;--muted:#667085;--accent:#2f5bea;--star:#f5a623;--off:#d0d5dd}
 @media(prefers-color-scheme:dark){:root{--bg:#14171d;--card:#1e222b;--text:#eef0f4;--muted:#9aa3b2;--accent:#6f8dff;--off:#3a4150}}
@@ -31,7 +31,7 @@ img{width:100%;max-height:60vh;object-fit:contain;border-radius:10px;background:
 <div id="intro">
   <h1>Evaluation quiz</h1>
   <p>Evaluate the accuracy of the description of the anomaly you see in the image.</p>
-  <button class="btn" id="start">Inizia</button>
+  <button class="btn" id="start">Start</button>
 </div>
 
 <div id="quiz" class="hide">
@@ -39,14 +39,14 @@ img{width:100%;max-height:60vh;object-fit:contain;border-radius:10px;background:
   <p class="muted" id="count"></p>
   <img id="img" alt="">
   <p class="frase" id="frase"></p>
-  <div class="stars" id="stars" role="radiogroup" aria-label="Voto da 1 a 5"></div>
-  <button class="btn" id="next" disabled>Avanti</button>
+  <div class="stars" id="stars" role="radiogroup" aria-label="Rating from 1 to 5"></div>
+  <button class="btn" id="next" disabled>Next</button>
 </div>
 
 <div id="fine" class="hide">
-  <h1 id="fineTit">Grazie!</h1>
+  <h1 id="fineTit">Thank you!</h1>
   <p id="fineTxt" class="muted"></p>
-  <button class="btn hide" id="retry">Riprova a inviare</button>
+  <button class="btn hide" id="retry">Try sending again</button>
 </div>
 
 </div>
@@ -67,7 +67,7 @@ function mescola(a){ a=a.slice(); for(let k=a.length-1;k>0;k--){const j=Math.flo
 const st = $("stars");
 for(let k=1;k<=5;k++){
   const b=document.createElement("button");
-  b.textContent="★"; b.setAttribute("aria-label",k+" stelle");
+  b.textContent="★"; b.setAttribute("aria-label",k+" stars");
   b.onclick=()=>setVoto(k); st.appendChild(b);
 }
 function setVoto(v){ voto=v; [...st.children].forEach((b,k)=>b.classList.toggle("on",k<v)); $("next").disabled=false; }
@@ -79,9 +79,9 @@ $("start").onclick=()=>{
 function mostra(){
   const d=scelte[i]; voto=0; setVoto(0); $("next").disabled=true;
   $("img").src=d.img; $("img").alt=d.text; $("frase").textContent=d.text;
-  $("count").textContent=`Domanda ${i+1} di ${scelte.length}`;
+  $("count").textContent=`Question ${i+1} of ${scelte.length}`;
   $("prog").style.width=(i/scelte.length*100)+"%";
-  $("next").textContent = i===scelte.length-1 ? "Invia" : "Avanti";
+  $("next").textContent = i===scelte.length-1 ? "Submit" : "Next";
 }
 $("next").onclick=()=>{
   risposte.push({domanda:scelte[i].id, frase:scelte[i].text, voto});
@@ -89,13 +89,13 @@ $("next").onclick=()=>{
 };
 async function invia(){
   $("quiz").classList.add("hide"); $("fine").classList.remove("hide");
-  $("fineTit").textContent="Invio in corso…"; $("fineTxt").textContent=""; $("retry").classList.add("hide");
+  $("fineTit").textContent="Sending…"; $("fineTxt").textContent=""; $("retry").classList.add("hide");
   try{
     await fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},
       body:JSON.stringify({persona:idPersona,risposte})});
-    $("fineTit").textContent="Grazie!"; $("fineTxt").textContent="Le tue risposte sono state inviate. Puoi chiudere questa pagina.";
+    $("fineTit").textContent="Thank you!"; $("fineTxt").textContent="Your answers have been sent. You can close this page.";
   }catch(e){
-    $("fineTit").textContent="Invio non riuscito"; $("fineTxt").textContent="Controlla la connessione e riprova.";
+    $("fineTit").textContent="Sending failed"; $("fineTxt").textContent="Check your connection and try again.";
     $("retry").classList.remove("hide"); $("retry").onclick=invia;
   }
 }
