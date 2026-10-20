@@ -64,7 +64,6 @@ const idPersona = Math.random().toString(36).slice(2, 10);
 
 function mescola(a){ a=a.slice(); for(let k=a.length-1;k>0;k--){const j=Math.floor(Math.random()*(k+1)); [a[k],a[j]]=[a[j],a[k]];} return a; }
 
-$("n").textContent = Math.min(QUANTE, DOMANDE.length);
 const st = $("stars");
 for(let k=1;k<=5;k++){
   const b=document.createElement("button");
